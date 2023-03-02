@@ -3,8 +3,9 @@ import XCTest
 
 fileprivate let nextValue = 3
 fileprivate let errorValue = URLError(.badURL)
+fileprivate let testQueue = DispatchQueue.global(qos: .userInitiated)
 
-final class ConcurrencyLibTests: XCTestCase {
+final class SubjectTests: XCTestCase {
     var obsySubject: ObsySubject<Int>!
     
     override func setUpWithError() throws {
@@ -20,7 +21,7 @@ final class ConcurrencyLibTests: XCTestCase {
         let nextExpectation = XCTestExpectation()
         let errorExpectation = XCTestExpectation()
         
-        obsySubject.subscribe(
+        _ = obsySubject.subscribe(
             onNext: { element in
                 XCTAssertEqual(nextValue, element)
                 nextExpectation.fulfill()
@@ -31,7 +32,6 @@ final class ConcurrencyLibTests: XCTestCase {
         
         obsySubject.resolve(nextValue)
         obsySubject.reject(URLError(.badURL))
-//        obsySubject.resolve(nextValue + 1)
         
         wait(for: [nextExpectation, errorExpectation], timeout: 3)
     }
@@ -39,7 +39,7 @@ final class ConcurrencyLibTests: XCTestCase {
     func testOnNextReceiving() {
         let expectation = XCTestExpectation()
         
-        obsySubject.subscribe(
+        _ = obsySubject.subscribe(
             onNext: { element in
                 XCTAssertEqual(nextValue, element)
                 expectation.fulfill()
@@ -55,7 +55,7 @@ final class ConcurrencyLibTests: XCTestCase {
     func testOnErrorReceiving() {
         let expectation = XCTestExpectation()
 
-        obsySubject.subscribe(
+        _ = obsySubject.subscribe(
             onNext: { _ in
                 XCTFail()
             },
@@ -72,7 +72,7 @@ final class ConcurrencyLibTests: XCTestCase {
         var expectations = [XCTestExpectation]()
         for _ in 0..<100 {
             let expectation = XCTestExpectation()
-            obsySubject.subscribe(
+            _ = obsySubject.subscribe(
                 onNext: { elem in
                     expectation.fulfill()
                 },
