@@ -28,49 +28,15 @@ public class ObsySubject<Element>:
     }
     
     // MARK: - Subscribe
-    func subscribe<Observer: ObserverType>(
-        _ observer: Observer
-    ) -> Disposable
-    where
-        Observer.Element == Element
+    func subscribe<Observer: ObserverType>(_ observer: Observer) -> Disposable where Observer: ObserverType<Element>
     {
-        if isDisposed {
-            return DisposableInstance.create()
-        }
-        
-        let key = sink.insert(observer.asAnyObserver())
-        return UnsubscribingDisposable(owner: self, observerKey: key)
-    }
-    
-    public func subscribe(
-        onNext: @escaping (Element) -> Void,
-        onError: @escaping (Error) -> Void,
-        onDispose: (() -> Void)? = nil
-    ) -> Disposable {
         if isDisposed {
             sink.on(.error(ObsyError.disposed))
             return DisposableInstance.create()
         }
         
-            // Added
-        let disposable: Disposable
-        if let disposeAction = onDispose {
-            disposable = DisposableInstance.create(with: disposeAction)
-        } else {
-            disposable = DisposableInstance.create()
-        }
-        
-        let observer = AnyObserver<Element> { event in
-            switch event {
-            case .next(let value):
-                onNext(value)
-            case .error(let error):
-                onError(error)
-                disposable.dispose()
-            }
-        }
-        
-        return DisposableInstance.create(self.subscribe(observer), disposable)
+        let key = sink.insert(observer.asAnyObserver())
+        return UnsubscribingDisposable(owner: self, observerKey: key)
     }
     
     // MARK: - Dispose

@@ -8,19 +8,18 @@
 import Atomics
 import Foundation
 
-// MARK: - Disposable
+/// `Disposable`은 일회성 이벤트를 방출하는 객체에 대해 적용 가능합니다
 public protocol Disposable {
     func dispose()
 }
 
+/// `Cancelable`은 여러번 이벤트를 방출하는 객체에 대해 적용 가능합니다.
 public protocol Cancelable: Disposable {
     var isDisposed: Bool { get }
 }
 
 // MARK: Actual instance
-public struct DisposableInstance {}
-
-extension DisposableInstance {
+public enum DisposableInstance {
     public static func create() -> Cancelable {
         DisposableSink(nil)
     }

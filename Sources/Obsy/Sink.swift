@@ -6,6 +6,11 @@
 //
 
 import Foundation
+import Atomics
+
+/// Sink는 해제 이벤트가 닿는 마지막 곳입니다.
+/// Observer의 경우 Sink를 통해 해제 이벤트를 관리하기를 권합니다.
+///
 
 final class ObsySubjectSink<Element> {
     private let lock = NSLock()
